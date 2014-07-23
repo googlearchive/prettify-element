@@ -1,5 +1,5 @@
 {
-  "name": "google-code-prettify-element",
+  "name": "prettify-element",
   "private": true,
   "dependencies": {
     "polymer": "Polymer/polymer#master",
