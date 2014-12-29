@@ -19,9 +19,13 @@ Element wrapper for the `google-code-prettify` (https://code.google.com/p/google
 
 ##### Example
 
+    <prettify-element text="def somefunc(param1='', param2=0):" language="html"></prettify-element>
+
+##### Example
+
     <prettify-element>
       <template>
-    
+
         <link rel="import" href="/components/polymer/polymer.html">
         <polymer-element name="proto-element">
         <template>
@@ -32,7 +36,7 @@ Element wrapper for the `google-code-prettify` (https://code.google.com/p/google
           });
         </script>
         </polymer-element>
-    
+
       </template>
     </prettify-element>
 
@@ -41,7 +45,7 @@ Element wrapper for the `google-code-prettify` (https://code.google.com/p/google
 @status alpha
 @snap snap.png
 -->
-<polymer-element name="prettify-element" attributes="text">
+<polymer-element name="prettify-element" attributes="text language">
 
   <template>
 
@@ -111,7 +115,16 @@ Element wrapper for the `google-code-prettify` (https://code.google.com/p/google
 
       textChanged: function() {
         this.$.content.innerHTML = prettyPrintOne((this.text || '').replace(/</g,'&lt;').replace(/>/g,'&gt;'));
+      },
+      languageChanged: function() {
+        //
+        if (!this.language || this.language =='--'){
+          this.$.content.innerHTML = prettyPrintOne((this.text || '').replace(/</g,'&lt;').replace(/>/g,'&gt;'));
+        }else{
+          this.$.content.innerHTML = prettyPrintOne((this.text || '').replace(/</g,'&lt;').replace(/>/g,'&gt;'),this.language.toLowerCase());
+        }
       }
+
 
     });
 
