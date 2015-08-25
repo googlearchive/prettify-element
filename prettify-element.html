@@ -19,9 +19,13 @@ Element wrapper for the `google-code-prettify` (https://code.google.com/p/google
 
 ##### Example
 
+    <prettify-element text="def somefunc(param1='', param2=0):" language="html"></prettify-element>
+
+##### Example
+
     <prettify-element>
       <template>
-    
+
         <link rel="import" href="/components/polymer/polymer.html">
         <polymer-element name="proto-element">
         <template>
@@ -32,7 +36,7 @@ Element wrapper for the `google-code-prettify` (https://code.google.com/p/google
           });
         </script>
         </polymer-element>
-    
+
       </template>
     </prettify-element>
 
@@ -41,80 +45,130 @@ Element wrapper for the `google-code-prettify` (https://code.google.com/p/google
 @status alpha
 @snap snap.png
 -->
-<polymer-element name="prettify-element" attributes="text">
 
+<dom-module id="prettify-element">
+  <style>
+    :host {
+      display: block;
+    }
+    code,pre {
+        color: #9f499b;
+        font-family: "Source Code Pro",Monaco,Menlo,Consolas,"Courier New",monospace;
+        @apply(--prettify-code-pre);
+    }
+    pre,.prettyprint {
+        background-color: #fafafa;
+        padding: 16px;
+        margin: 30px 0;
+        @apply(--prettify-pre);
+    }
+    pre .typ,pre .inline,.prettyprint .typ,.prettyprint .inline {
+        color: #6b499f;
+        @apply(--prettify-typ-inline);
+    }
+    pre .pun,.prettyprint .pun {
+        color: #5c6bc0;
+        @apply(--prettify-pun);
+    }
+    pre .str,pre .string,.prettyprint .str,.prettyprint .string {
+        color: #ff4081;
+        @apply(--prettify-str-string);
+    }
+    pre .pln,.prettyprint .pln {
+        color: #7986cb;
+        @apply(--prettify-pln);
+    }
+    pre .kwd,.prettyprint .kwd {
+        color: #d61a7f;
+        @apply(--prettify-kwd);
+    }
+    pre .atn,pre .attribute-name,.prettyprint .atn,.prettyprint .attribute-name {
+        color: #6b499f;
+        @apply(--prettify-atn-attribute-name);
+    }
+    pre .atv,pre .attribute-value,.prettyprint .atv,.prettyprint .attribute-value {
+        color: #7986cb;
+        @apply(--prettify-atv-attribute-value);
+    }
+    pre .com,pre .comment,.prettyprint .com,.prettyprint .comment {
+        color: #8a8a8a;
+        @apply(--prettify-com-comment);
+    }
+    
+    pre .tag,.prettyprint .tag{
+      @apply(--prettify-tag);
+    }
+    pre .lit,.prettyprint .lit{
+      @apply(--prettify-lit);
+    }
+    pre .opn,pre .clo,.prettyprint .opn,.prettyprint .clo {
+      @apply(--prettify-opn-clo);
+    }
+    pre .dec,pre .var,.prettyprint .dec,.prettyprint .var {
+      @apply(--prettify-dec-var);
+    }
+    pre .fun,.prettyprint .fun{
+      @apply(--prettify-fun);
+    }
+}
+    
+  </style>
+
+  <!-- Pre-canned styles that come with prettify (we opt for more pleasing light theme)  -->
+  <!-- <link href="../google-code-prettify/src/prettify.css" rel="stylesheet" /> -->
+  <!-- <link href="../google-code-prettify/styles/sons-of-obsidian.css" rel="stylesheet" /> -->
+  <!-- <link href="../google-code-prettify/styles/sunburst.css" rel="stylesheet" /> -->
   <template>
 
-    <style>
-      :host {
-        display: block;
-      }
-
-      code,pre {
-          color: #9f499b;
-          font-family: "Source Code Pro",Monaco,Menlo,Consolas,"Courier New",monospace
-      }
-      pre,.prettyprint {
-          background-color: #fafafa;
-          padding: 16px;
-          margin: 30px 0
-      }
-      pre .typ,pre .inline,.prettyprint .typ,.prettyprint .inline {
-          color: #6b499f
-      }
-      pre .pun,.prettyprint .pun {
-          color: #5c6bc0
-      }
-      pre .str,pre .string,.prettyprint .str,.prettyprint .string {
-          color: #ff4081
-      }
-      pre .pln,.prettyprint .pln {
-          color: #7986cb
-      }
-      pre .kwd,.prettyprint .kwd {
-          color: #d61a7f
-      }
-      pre .atn,pre .attribute-name,.prettyprint .atn,.prettyprint .attribute-name {
-          color: #6b499f
-      }
-      pre .atv,pre .attribute-value,.prettyprint .atv,.prettyprint .attribute-value {
-          color: #7986cb
-      }
-      pre .com,pre .comment,.prettyprint .com,.prettyprint .comment {
-          color: #8a8a8a
-      }
-
-    </style>
-
-    <!-- Pre-canned styles that come with prettify (we opt for more pleasing light theme)  -->
-    <!-- <link href="../google-code-prettify/src/prettify.css" rel="stylesheet" /> -->
-    <!-- <link href="../google-code-prettify/styles/sons-of-obsidian.css" rel="stylesheet" /> -->
-    <!-- <link href="../google-code-prettify/styles/sunburst.css" rel="stylesheet" /> -->
-
-    <pre class="prettyprint" id="content"></pre>
+    <pre class="prettyprint" id="content">
+    </pre>
 
   </template>
 
   <script>
 
-    Polymer('prettify-element', {
-
-      domReady: function() {
-        if (!this.text) {
-          if (this.firstElementChild && this.firstElementChild.localName === 'template') {
-            this.text = this.firstElementChild.innerHTML;
-          } else {
-            this.text = this.innerHTML;
-          }
+    Polymer({
+      is: 'prettify-element',
+      properties: {
+        text: {
+          type: String,
+          notify: true,
+          observer: 'textChanged'
+        },
+        language: {
+          type: String,
+          notify: true,
+          observer: 'languageChanged'
         }
       },
-
+      ready: function() {
+        if (!this.text) {
+          var firstElement = Polymer.dom(this).firstElementChild;
+          if (firstElement && firstElement.localName === 'template') {
+            this.text = Polymer.dom(firstElement).innerHTML;
+          } else {
+            this.text = Polymer.dom(this).innerHTML;
+          }
+          
+        }
+      },
       textChanged: function() {
-        this.$.content.innerHTML = prettyPrintOne((this.text || '').replace(/</g,'&lt;').replace(/>/g,'&gt;'));
+        var prettyText = prettyPrintOne((this.text || '').replace(/</g,'&lt;').replace(/>/g,'&gt;'));
+        
+        Polymer.dom(this.$.content).innerHTML = prettyText;
+        
+      },
+      languageChanged: function() {
+        var prettyText = '';
+        if (!this.language || this.language =='--'){
+          prettyText = prettyPrintOne((this.text || '').replace(/</g,'&lt;').replace(/>/g,'&gt;'));
+        }else{
+          prettyText = prettyPrintOne((this.text || '').replace(/</g,'&lt;').replace(/>/g,'&gt;'),this.language.toLowerCase());
+        }
+        Polymer.dom(this.$.content).innerHTML = '<div>' + prettyText + '</div>';
       }
-
     });
 
   </script>
 
-</polymer-element>
+</dom-module>
